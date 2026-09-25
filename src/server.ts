@@ -6,7 +6,7 @@ import { initDataSource } from "./db/typeorm.js";
 import { initMigrations } from "./db/init-migrate.js";
 
 const app = createApp();
-const PORT = Number(env.port) || 3000;
+const PORT = Number(env.port) || 9000;
 
 const startServer = async () => {
   const dataSource = await initDataSource().catch((err: unknown) => {

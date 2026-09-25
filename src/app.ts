@@ -5,9 +5,9 @@ import helmet from "helmet";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import { requestLogger } from "./middlewares/requestLogger.middleware.js";
 import { notFoundHandler } from "./middlewares/notFound.middleware.js";
-
 import { asyncHandler } from "./middlewares/asyncHandler.middleware.js";
 import { HealthService } from "./service/health.service.js";
+import { StatusCodes } from "http-status-codes";
 
 const app = express();
 const healthService = new HealthService();
@@ -21,7 +21,10 @@ const createApp = () => {
 
   app.get(
     "/health", 
-    asyncHandler(async (_req: Request, _res: Response) => healthService.checkHealth())
+    asyncHandler(async (_req: Request, res: Response) => { 
+      const health = await healthService.checkHealth();
+      res.status(StatusCodes.OK).json(health);
+    })
   );
 
   app.use(notFoundHandler);
