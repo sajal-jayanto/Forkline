@@ -9,6 +9,16 @@ import {
 } from "typeorm";
 import { OutletMenuItem } from "./outlet-menu-item.entity.js";
 
+
+export interface MenuItemDto {
+  name: string;
+  description?: string;
+  slug?: string; 
+  imageUrl: string;
+  masterPrice: string;
+  isActive?: boolean;
+}
+
 @Entity({ name: "menu_items" })
 export class MenuItem {
   @PrimaryGeneratedColumn()

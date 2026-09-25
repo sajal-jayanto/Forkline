@@ -1,5 +1,4 @@
 import pino from "pino";
-import pc from "picocolors";
 import { env } from "./env.js";
 
 const transportOption = {
