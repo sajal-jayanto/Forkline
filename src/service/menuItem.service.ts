@@ -1,7 +1,7 @@
 import { MenuItemDto } from "../entities/menu-item.entity.js";
 import { MenuItemRepository } from "../repository/menuItem.repository.js";
 import { v4 as uuIdv4 } from 'uuid';
-import { demoUrl } from "../utils.js";
+import { demoDescription, demoUrl } from "../utils.js";
 
 export class MenuItemService {
   private menuItemRepository = new MenuItemRepository();
