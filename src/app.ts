@@ -8,6 +8,7 @@ import { notFoundHandler } from "./middlewares/notFound.middleware.js";
 import { asyncHandler } from "./middlewares/asyncHandler.middleware.js";
 import { HealthService } from "./service/health.service.js";
 import { StatusCodes } from "http-status-codes";
+import { menuItemRouter } from "./routes/menuItem.router.js";
 
 const app = express();
 const healthService = new HealthService();
@@ -26,6 +27,8 @@ const createApp = () => {
       res.status(StatusCodes.OK).json(health);
     })
   );
+
+  app.use("/menu-item" , menuItemRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

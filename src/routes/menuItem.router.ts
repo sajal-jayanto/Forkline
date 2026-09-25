@@ -5,10 +5,10 @@ import { validateSchema } from "../middlewares/validate.middleware.js";
 import { createMenuItemSchema } from "../schemas/menuItem.schema.js";
 import { MenuItemService } from "../service/menuItem.service.js";
 
-export const menuItem = Router();
+export const menuItemRouter = Router();
 const menuItemService = new MenuItemService();
 
-menuItem.get(
+menuItemRouter.get(
   "/create", 
   validateSchema({ body: createMenuItemSchema }),
   asyncHandler(async (req: Request, res: Response) => {
