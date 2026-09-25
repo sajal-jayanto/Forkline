@@ -1,0 +1,33 @@
+import express , { type Request, type Response }  from "express";
+
+import cors from "cors";
+import helmet from "helmet";
+import { errorHandler } from "./middlewares/error.middleware.js";
+import { requestLogger } from "./middlewares/requestLogger.middleware.js";
+import { notFoundHandler } from "./middlewares/notFound.middleware.js";
+
+import { asyncHandler } from "./middlewares/asyncHandler.middleware.js";
+import { HealthService } from "./service/health.service.js";
+
+const app = express();
+const healthService = new HealthService();
+
+const createApp = () => {
+  app.use(helmet());
+  app.use(cors());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(requestLogger);
+
+  app.get(
+    "/health", 
+    asyncHandler(async (_req: Request, _res: Response) => healthService.checkHealth())
+  );
+
+  app.use(notFoundHandler);
+  app.use(errorHandler);
+
+  return app;
+};
+
+export default createApp;
