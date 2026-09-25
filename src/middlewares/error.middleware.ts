@@ -18,6 +18,7 @@ export class HttpError extends Error {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = err instanceof HttpError ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR;
   const message = err instanceof HttpError ? err.message : "Internal Server Error";
