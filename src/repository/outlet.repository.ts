@@ -9,6 +9,14 @@ export class OutletRepository {
     return getDataSource().getRepository(Outlet);
   }
 
+  async searchBy({ outletId } : {outletId : number}) {
+    try {
+      return this.repo.findOneBy({ id: outletId });
+    } catch (error) {
+      throw new HttpError(`Failed to excuted find outlet By Id` ,  StatusCodes.EXPECTATION_FAILED, error as Error);
+    }
+  }
+
   async create(payload: OutletDto) {
     try {
       const raw = this.repo.create(payload);
