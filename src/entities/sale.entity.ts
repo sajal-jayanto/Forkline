@@ -13,6 +13,13 @@ import {
 import { Outlet } from "./outlet.entity.js";
 import { SaleItem } from "./sale-item.entity.js";
 
+export interface SaleDto {
+  outletId: number,
+  receiptNumber: number,
+  taxAmount: string,
+  totalAmount: string,
+}
+
 @Entity({ name: "sales" })
 @Unique("uq_outlet_receipt", ["outletId", "receiptNumber"])
 export class Sale {

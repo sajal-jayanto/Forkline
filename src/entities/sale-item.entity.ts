@@ -12,6 +12,14 @@ import {
 import { OutletMenuItem } from "./outlet-menu-item.entity.js";
 import { Sale } from "./sale.entity.js";
 
+export interface SaleItemDto {
+  saleId: number,
+  outletMenuItemId: number,
+  quantity: number,
+  unitPrice: string,
+  subtotal: string,
+}
+
 @Entity({ name: "sale_items" })
 @Unique("uq_sale_item", ["saleId", "outletMenuItemId"])
 export class SaleItem {
