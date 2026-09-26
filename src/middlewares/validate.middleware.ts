@@ -21,7 +21,10 @@ const validateSchema =
     try {
       if (body) req.body = body.parse(req.body);
       if (params) req.params = params.parse(req.params) as typeof req.params;
-      if (query) req.query = query.parse(req.query) as typeof req.query;
+      if (query) {
+        // Express 5 exposes req.query as a getter only, so redefine it instead of assigning.
+        Object.defineProperty(req, "query", { value: query.parse(req.query), writable: true, configurable: true });
+      }
       next();
     } catch (err) {
       if (err instanceof ZodError) {

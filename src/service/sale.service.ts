@@ -7,6 +7,7 @@ import { getDataSource } from "../db/typeorm.js";
 import { SaleDto } from "../entities/sale.entity.js";
 import { SaleItemDto } from "../entities/sale-item.entity.js";
 import { OutletMenuItem } from "../entities/outlet-menu-item.entity.js";
+import { toAmount, toCents } from "../utils.js";
 
 export interface CreateSaleItemDto {
   menuItemId: number;
@@ -31,9 +32,6 @@ export class SealService {
       quantities.set(item.menuItemId, (quantities.get(item.menuItemId) ?? 0) + item.quantity);
     }
     const menuItems = [...quantities.keys()];
-
-    const toCents = (amount: string) => Math.round(Number(amount) * 100);
-    const toAmount = (cents: number) => (cents / 100).toFixed(2);
 
     return getDataSource().transaction(async txManager => {
       const outletMenuItems = await this.outletMenuItemRepository.searchManyForUpdate({
