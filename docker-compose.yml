@@ -1,0 +1,48 @@
+name: forkline
+
+services:
+  forkline-postgres-db:
+    container_name: forkline-postgres-db
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-root}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
+      POSTGRES_DB: ${DB_NAME:-forkline}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - forkline-net
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      forkline-postgres-db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-9000}
+      DB_HOST: forkline-postgres-db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-forkline}
+    ports:
+      - "${PORT:-9000}:${PORT:-9000}"
+    networks:
+      - forkline-net
+
+volumes:
+  postgres_data:
+
+networks:
+  forkline-net:
+    driver: bridge
