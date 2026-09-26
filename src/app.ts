@@ -9,6 +9,7 @@ import { asyncHandler } from "./middlewares/asyncHandler.middleware.js";
 import { HealthService } from "./service/health.service.js";
 import { StatusCodes } from "http-status-codes";
 import { menuItemRouter } from "./routes/menuItem.router.js";
+import { outletRouter } from "./routes/outlet.router.js";
 
 const app = express();
 const healthService = new HealthService();
@@ -29,6 +30,7 @@ const createApp = () => {
   );
 
   app.use("/menu-item" , menuItemRouter);
+  app.use("/outlet" , outletRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

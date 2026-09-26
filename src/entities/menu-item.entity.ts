@@ -9,7 +9,6 @@ import {
 } from "typeorm";
 import { OutletMenuItem } from "./outlet-menu-item.entity.js";
 
-
 export interface MenuItemDto {
   name: string;
   description?: string;

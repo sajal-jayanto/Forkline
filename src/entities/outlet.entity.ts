@@ -10,6 +10,14 @@ import {
 import { OutletMenuItem } from "./outlet-menu-item.entity.js";
 import { Sale } from "./sale.entity.js";
 
+export interface OutletDto {
+  name: string;
+  slug?: string;
+  description?: string;
+  location?: string;
+  isActive?: boolean;
+}
+
 @Entity({ name: "outlets" })
 export class Outlet {
   @PrimaryGeneratedColumn()

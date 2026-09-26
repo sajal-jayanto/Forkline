@@ -8,12 +8,12 @@ import { MenuItemService } from "../service/menuItem.service.js";
 export const menuItemRouter = Router();
 const menuItemService = new MenuItemService();
 
-menuItemRouter.get(
+menuItemRouter.post(
   "/create", 
   validateSchema({ body: createMenuItemSchema }),
   asyncHandler(async (req: Request, res: Response) => {
     const { body } = req;
-    const menuItem = await menuItemService.createMenuItem(body);
-    res.status(StatusCodes.CREATED).json(menuItem);
+    const createdItem = await menuItemService.createMenuItem(body);
+    res.status(StatusCodes.CREATED).json(createdItem);
   })
 );
