@@ -105,25 +105,25 @@ curl http://localhost:9000/health
 
 ## 2. API Endpoints
 
-Base URL: `http://localhost:9000`. All request and response bodies are JSON.
+Base URL: `http://localhost:9000/api/v1` for all routes except `/health`, which is served at the root (`http://localhost:9000/health`). All request and response bodies are JSON.
 
-| Method | Path                           | Purpose                                     |
-| ------ | ------------------------------ | ------------------------------------------- |
-| GET    | `/health`                      | Service and database health                 |
-| GET    | `/outlet`                      | List all outlets                            |
-| POST   | `/outlet/create`               | Create an outlet                            |
-| GET    | `/menu-item?outletId=`         | List menu items (optionally for one outlet) |
-| POST   | `/menu-item/create`            | Create a master menu item (HQ)              |
-| POST   | `/menu-item/assign-outlet`     | Assign a menu item to an outlet (HQ)        |
-| POST   | `/sale/new`                    | Record a sale at an outlet                  |
-| GET    | `/report/revenue-by-outlet`    | Revenue and sale count per outlet           |
-| GET    | `/report/top-items-by-outlet?outletId=` | Top 5 best-selling items for one outlet |
+| Method | Path                                           | Purpose                                     |
+| ------ | ---------------------------------------------- | ------------------------------------------- |
+| GET    | `/health`                                      | Service and database health                 |
+| GET    | `/api/v1/outlet`                               | List all outlets                            |
+| POST   | `/api/v1/outlet/create`                        | Create an outlet                            |
+| GET    | `/api/v1/menu-item?outletId=`                  | List menu items (optionally for one outlet) |
+| POST   | `/api/v1/menu-item/create`                     | Create a master menu item (HQ)              |
+| POST   | `/api/v1/menu-item/assign-outlet`              | Assign a menu item to an outlet (HQ)        |
+| POST   | `/api/v1/sale/new`                             | Record a sale at an outlet                  |
+| GET    | `/api/v1/report/revenue-by-outlet`             | Revenue and sale count per outlet           |
+| GET    | `/api/v1/report/top-items-by-outlet?outletId=` | Top 5 best-selling items for one outlet     |
 
-### `GET /outlet`
+### `GET /api/v1/outlet`
 
 **200 OK**: returns an array of all outlets, ordered by `id`.
 
-### `POST /outlet/create`
+### `POST /api/v1/outlet/create`
 
 ```json
 {
@@ -141,7 +141,7 @@ Base URL: `http://localhost:9000`. All request and response bodies are JSON.
 
 **201 Created**: returns the created outlet (a UUID `slug` is generated automatically).
 
-### `GET /menu-item`
+### `GET /api/v1/menu-item`
 
 | Query param | Type    | Required | Rules                                   |
 | ----------- | ------- | -------- | --------------------------------------- |
@@ -150,7 +150,7 @@ Base URL: `http://localhost:9000`. All request and response bodies are JSON.
 **200 OK**: returns an array of master menu items, ordered by `id`. Without `outletId`, all items are returned. With `outletId`, only items assigned to that outlet are returned, each with an `outletMenuItems` array holding that outlet's `priceOverride`, `availableUnit` and `isAvailable`.
 **400**: invalid `outletId`. **404**: outlet not found.
 
-### `POST /menu-item/create`
+### `POST /api/v1/menu-item/create`
 
 ```json
 {
@@ -170,7 +170,7 @@ Base URL: `http://localhost:9000`. All request and response bodies are JSON.
 
 **201 Created**: returns the created menu item.
 
-### `POST /menu-item/assign-outlet`
+### `POST /api/v1/menu-item/assign-outlet`
 
 Makes a menu item sellable at an outlet, with an outlet-specific price and stock.
 
@@ -193,7 +193,7 @@ Makes a menu item sellable at an outlet, with an outlet-specific price and stock
 **200 OK**: returns the created outlet–menu-item assignment.
 **404**: outlet or menu item not found. **409**: item is already assigned to this outlet.
 
-### `POST /sale/new`
+### `POST /api/v1/sale/new`
 
 Records a sale. Everything happens in one database transaction: stock is checked and decremented, and a per-outlet receipt number is issued.
 
@@ -224,12 +224,12 @@ Behavior:
 **201 Created**: returns the sale with its `saleItems`.
 **404**: one or more items are not assigned to this outlet. **409**: an item is unavailable or doesn't have enough stock.
 
-### `GET /report/revenue-by-outlet`
+### `GET /api/v1/report/revenue-by-outlet`
 
 Takes no query parameters; revenue is calculated across all sales.
 
 ```bash
-curl "http://localhost:9000/report/revenue-by-outlet"
+curl "http://localhost:9000/api/v1/report/revenue-by-outlet"
 ```
 
 ```json
@@ -244,14 +244,14 @@ curl "http://localhost:9000/report/revenue-by-outlet"
 
 Outlets with no sales are still listed, with zero values. Results are sorted by revenue, highest first.
 
-### `GET /report/top-items-by-outlet`
+### `GET /api/v1/report/top-items-by-outlet`
 
 | Query      | Type    | Required | Description         |
 | ---------- | ------- | -------- | ------------------- |
 | `outletId` | integer | yes      | Outlet to report on |
 
 ```bash
-curl "http://localhost:9000/report/top-items-by-outlet?outletId=1"
+curl "http://localhost:9000/api/v1/report/top-items-by-outlet?outletId=1"
 ```
 
 ```json
@@ -420,7 +420,7 @@ PostgreSQL    tables defined by SQL migrations in migrations/
 
 ### Sale flow: consistency under concurrency
 
-`POST /sale/new` runs in a single transaction ([src/service/sale.service.ts](src/service/sale.service.ts)):
+`POST /api/v1/sale/new` runs in a single transaction ([src/service/sale.service.ts](src/service/sale.service.ts)):
 
 1. Merge duplicate items in the request.
 2. `SELECT … FOR UPDATE` the matching `outlet_menu_items` rows, ordered by `id` so concurrent sales lock rows in the same order and avoid deadlocks.
@@ -504,7 +504,7 @@ WHERE outlet_id = $1 RETURNING last_receipt;
 
 This also replaces a `MAX()` over a growing table with a single-row update.
 
-**c) Idempotent sale creation.** Outlet POS terminals run on real-world networks. When a request times out after the server committed, the retry must not create a second sale. Add an `Idempotency-Key` header on `POST /sale/new`, stored in a `sales.client_reference UUID UNIQUE` column. A retry with the same key returns the original sale.
+**c) Idempotent sale creation.** Outlet POS terminals run on real-world networks. When a request times out after the server committed, the retry must not create a second sale. Add an `Idempotency-Key` header on `POST /api/v1/sale/new`, stored in a `sales.client_reference UUID UNIQUE` column. A retry with the same key returns the original sale.
 
 **d) Connection management.** With 2–3 API replicas, each TypeORM pool (default 10) stays well under Postgres's `max_connections`. Set the pool size explicitly. Add PgBouncer (transaction mode) only when replica count or serverless deployment makes connection count a problem.
 
@@ -647,7 +647,7 @@ The code already has natural seams: each domain has its own router → service �
 ### 6.4 Migration path (strangler pattern)
 
 1. **Enforce module boundaries in the monolith.** Add the outbox table and a broker. No behaviour change.
-2. **Extract Reporting.** It consumes `sale.created` and builds its own rollups. The gateway routes `/report/*` to it. Lowest risk, because it's read-only.
+2. **Extract Reporting.** It consumes `sale.created` and builds its own rollups. The gateway routes `/api/v1/report/*` to it. Lowest risk, because it's read-only.
 3. **Extract Notification and Kitchen (KDS)** as pure event consumers.
 4. **Extract Catalog.** Sales & Inventory switches from reading catalog tables to its own event-fed copy of prices and assignments.
 5. **Extract Identity** once there are several consumers of auth.
