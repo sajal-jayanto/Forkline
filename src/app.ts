@@ -30,11 +30,11 @@ const createApp = () => {
       res.status(StatusCodes.OK).json(health);
     })
   );
-
-  app.use("/menu-item" , menuItemRouter);
-  app.use("/outlet" , outletRouter);
-  app.use("/report" , reportRouter);
-  app.use("/sale" , sealRouter);
+  
+  app.use("/api/v1/menu-item" , menuItemRouter);
+  app.use("/api/v1/outlet" , outletRouter);
+  app.use("/api/v1/report" , reportRouter);
+  app.use("/api/v1/sale" , sealRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

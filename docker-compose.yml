@@ -21,7 +21,7 @@ services:
     networks:
       - forkline-net
 
-  api:
+  forkline-api:
     build: .
     restart: unless-stopped
     depends_on:
