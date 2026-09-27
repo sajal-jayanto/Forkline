@@ -1,20 +1,15 @@
 import { ReportRepository } from "../repository/report.repository.js";
-import type { RevenueByOutletQuery, TopItemsByOutletQuery } from "../schemas/report.schema.js";
+import { OutletRepository } from "../repository/outlet.repository.js";
+import { HttpError } from "../middlewares/error.middleware.js";
+import { StatusCodes } from "http-status-codes";
 import { toAmount, toCents } from "../utils.js";
-
-interface TopItem {
-  rank: number;
-  menuItemId: number;
-  menuItemName: string;
-  quantitySold: number;
-  totalRevenue: string;
-}
 
 export class ReportService {
   private reportRepository = new ReportRepository();
+  private outletRepository = new OutletRepository();
 
-  async revenueByOutlet({ from, to }: RevenueByOutletQuery) {
-    const rows = await this.reportRepository.revenueByOutlet({ from, to });
+  async revenueByOutlet() {
+    const rows = await this.reportRepository.revenueByOutlet();
 
     const sales = rows.map(row => ({
       outletId: row.outletId,
@@ -25,37 +20,28 @@ export class ReportService {
     const totalRevenueCents = rows.reduce((sum, row) => sum + toCents(row.totalRevenue), 0);
 
     return {
-      from: from ?? null,
-      to: to ?? null,
       totalRevenue: toAmount(totalRevenueCents),
       sales,
     };
   }
 
-  async topItemsByOutlet({ from, to, limit }: TopItemsByOutletQuery) {
+  async topItemsByOutlet(outletId : number) {
+    const outlet = await this.outletRepository.searchBy({ outletId });
 
-    const rows = await this.reportRepository.topItemsByOutlet({ from, to, limit });
-    const outlets = new Map<number, { outletId: number; outletName: string; items: TopItem[] }>();
-    
-    for (const row of rows) {
-      if (!outlets.has(row.outletId)) {
-        outlets.set(row.outletId, { outletId: row.outletId, outletName: row.outletName, items: [] });
-      }
-      if (row.menuItemId === null) continue;
-      outlets.get(row.outletId)!.items.push({
-        rank: Number(row.rank),
-        menuItemId: row.menuItemId,
-        menuItemName: row.menuItemName!,
-        quantitySold: Number(row.quantitySold),
-        totalRevenue: toAmount(toCents(row.totalRevenue!)),
-      });
+    if (!outlet) {
+      throw new HttpError("Outlet not found.", StatusCodes.NOT_FOUND);
     }
 
+    const TOP_ITEMS_LIMIT = 5;
+    const rows = await this.reportRepository.topItemsByOutlet({ outletId, limit: TOP_ITEMS_LIMIT });
     return {
-      from: from ?? null,
-      to: to ?? null,
-      limit,
-      outlets: [...outlets.values()],
+      outletId: outlet.id,
+      outletName: outlet.name,
+      items: rows.map(row => ({
+        menuItemId: row.menuItemId,
+        menuItemName: row.menuItemName,
+        quantitySold: Number(row.quantitySold),
+      })),
     };
   }
 }

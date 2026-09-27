@@ -3,10 +3,7 @@ import { asyncHandler } from "../middlewares/asyncHandler.middleware.js";
 import { StatusCodes } from "http-status-codes";
 import { validateSchema } from "../middlewares/validate.middleware.js";
 import {
-  revenueByOutletQuerySchema,
-  topItemsByOutletQuerySchema,
-  type RevenueByOutletQuery,
-  type TopItemsByOutletQuery,
+  topItemsByOutletQuerySchema
 } from "../schemas/report.schema.js";
 import { ReportService } from "../service/report.service.js";
 
@@ -15,10 +12,8 @@ const reportService = new ReportService();
 
 reportRouter.get(
   "/revenue-by-outlet",
-  validateSchema({ query: revenueByOutletQuerySchema }),
-  asyncHandler(async (req: Request, res: Response) => {
-    const query  = req.query as RevenueByOutletQuery;
-    const data = await reportService.revenueByOutlet(query);
+  asyncHandler(async (_req: Request, res: Response) => {
+    const data = await reportService.revenueByOutlet();
     res.status(StatusCodes.OK).json(data);
   })
 );
@@ -27,8 +22,8 @@ reportRouter.get(
   "/top-items-by-outlet",
   validateSchema({ query: topItemsByOutletQuerySchema }),
   asyncHandler(async (req: Request, res: Response) => {
-    const query = req.query as unknown as TopItemsByOutletQuery;
-    const data = await reportService.topItemsByOutlet(query);
+    const { outletId } = req.query;
+    const data = await reportService.topItemsByOutlet(Number(outletId));
     res.status(StatusCodes.OK).json(data);
   })
 );

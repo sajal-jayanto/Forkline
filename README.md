@@ -117,7 +117,7 @@ Base URL: `http://localhost:9000`. All request and response bodies are JSON.
 | POST   | `/menu-item/assign-outlet`     | Assign a menu item to an outlet (HQ)        |
 | POST   | `/sale/new`                    | Record a sale at an outlet                  |
 | GET    | `/report/revenue-by-outlet`    | Revenue and sale count per outlet           |
-| GET    | `/report/top-items-by-outlet`  | Best-selling items per outlet               |
+| GET    | `/report/top-items-by-outlet?outletId=` | Top 5 best-selling items for one outlet |
 
 ### `GET /outlet`
 
@@ -226,19 +226,14 @@ Behavior:
 
 ### `GET /report/revenue-by-outlet`
 
-| Query  | Type         | Required | Description                  |
-| ------ | ------------ | -------- | ---------------------------- |
-| `from` | `YYYY-MM-DD` | no       | Inclusive start date         |
-| `to`   | `YYYY-MM-DD` | no       | Inclusive end date (whole day) |
+Takes no query parameters; revenue is calculated across all sales.
 
 ```bash
-curl "http://localhost:9000/report/revenue-by-outlet?from=2026-09-01&to=2026-09-30"
+curl "http://localhost:9000/report/revenue-by-outlet"
 ```
 
 ```json
 {
-  "from": "2026-09-01",
-  "to": "2026-09-30",
   "totalRevenue": "12500.00",
   "sales": [
     { "outletId": 1, "outletName": "Gulshan Branch", "totalSales": 30, "totalRevenue": "9000.00" },
@@ -247,38 +242,31 @@ curl "http://localhost:9000/report/revenue-by-outlet?from=2026-09-01&to=2026-09-
 }
 ```
 
-Outlets with no sales in the range are still listed, with zero values. Results are sorted by revenue, highest first.
+Outlets with no sales are still listed, with zero values. Results are sorted by revenue, highest first.
 
 ### `GET /report/top-items-by-outlet`
 
-| Query   | Type         | Required | Description                     |
-| ------- | ------------ | -------- | ------------------------------- |
-| `from`  | `YYYY-MM-DD` | no       | Inclusive start date            |
-| `to`    | `YYYY-MM-DD` | no       | Inclusive end date              |
-| `limit` | integer      | no       | Items per outlet, 1–50 (default 5) |
+| Query      | Type    | Required | Description         |
+| ---------- | ------- | -------- | ------------------- |
+| `outletId` | integer | yes      | Outlet to report on |
 
 ```bash
-curl "http://localhost:9000/report/top-items-by-outlet?limit=3"
+curl "http://localhost:9000/report/top-items-by-outlet?outletId=1"
 ```
 
 ```json
 {
-  "from": null,
-  "to": null,
-  "limit": 3,
-  "outlets": [
-    {
-      "outletId": 1,
-      "outletName": "Gulshan Branch",
-      "items": [
-        { "rank": 1, "menuItemId": 1, "menuItemName": "Chicken Burger", "quantitySold": 40, "totalRevenue": "15200.00" }
-      ]
-    }
+  "outletId": 1,
+  "outletName": "Gulshan Branch",
+  "items": [
+    { "menuItemId": 1, "menuItemName": "Chicken Burger", "quantitySold": 40 },
+    { "menuItemId": 3, "menuItemName": "French Fries", "quantitySold": 25 }
   ]
 }
 ```
 
-Items are ranked by quantity sold, then revenue, then menu item ID as a tie-breaker.
+Returns at most 5 items, ranked by quantity sold (menu item ID breaks ties). An outlet with no sales returns an empty `items` array.
+**404**: outlet not found.
 
 ### Error format
 
@@ -551,7 +539,7 @@ CREATE TABLE daily_item_sales (
 
 - **How they're kept up to date:** upsert (`INSERT … ON CONFLICT DO UPDATE`) inside the existing sale transaction. The sale already holds a `FOR UPDATE` lock on the same `(outlet, menu item)` rows, so the rollup upsert adds no new lock contention. The rollup is always exactly consistent with `sales`.
 - **Size:** 10 outlets × ~100 items × 365 days ≈ 365k rows/year at most, compared with ~3.6M `sale_items` rows. A one-year report reads a few thousand rows.
-- **Queries:** `revenue-by-outlet` becomes `SUM` over `daily_outlet_sales`. `top-items-by-outlet` keeps the same `ROW_NUMBER() OVER (PARTITION BY outlet_id …)` logic, but runs it over `daily_item_sales`.
+- **Queries:** `revenue-by-outlet` becomes `SUM` over `daily_outlet_sales`. `top-items-by-outlet` runs the same top-5 `GROUP BY` for one outlet, but over `daily_item_sales`.
 - A one-off backfill script builds the rollups from existing sales. A nightly check compares rollup totals with the raw tables.
 
 (Alternative: materialized views with `REFRESH MATERIALIZED VIEW CONCURRENTLY` every few minutes. This is simpler to add, but reports become slightly stale, and each refresh recomputes everything.)
