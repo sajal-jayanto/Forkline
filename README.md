@@ -110,12 +110,18 @@ Base URL: `http://localhost:9000`. All request and response bodies are JSON.
 | Method | Path                           | Purpose                                     |
 | ------ | ------------------------------ | ------------------------------------------- |
 | GET    | `/health`                      | Service and database health                 |
+| GET    | `/outlet`                      | List all outlets                            |
 | POST   | `/outlet/create`               | Create an outlet                            |
+| GET    | `/menu-item?outletId=`         | List menu items (optionally for one outlet) |
 | POST   | `/menu-item/create`            | Create a master menu item (HQ)              |
 | POST   | `/menu-item/assign-outlet`     | Assign a menu item to an outlet (HQ)        |
 | POST   | `/sale/new`                    | Record a sale at an outlet                  |
 | GET    | `/report/revenue-by-outlet`    | Revenue and sale count per outlet           |
 | GET    | `/report/top-items-by-outlet`  | Best-selling items per outlet               |
+
+### `GET /outlet`
+
+**200 OK**: returns an array of all outlets, ordered by `id`.
 
 ### `POST /outlet/create`
 
@@ -134,6 +140,15 @@ Base URL: `http://localhost:9000`. All request and response bodies are JSON.
 | `location`    | string | no       | defaults to `Dhaka, Bangladesh` |
 
 **201 Created**: returns the created outlet (a UUID `slug` is generated automatically).
+
+### `GET /menu-item`
+
+| Query param | Type    | Required | Rules                                   |
+| ----------- | ------- | -------- | --------------------------------------- |
+| `outletId`  | integer | no       | > 0; if set, only that outlet's items   |
+
+**200 OK**: returns an array of master menu items, ordered by `id`. Without `outletId`, all items are returned. With `outletId`, only items assigned to that outlet are returned, each with an `outletMenuItems` array holding that outlet's `priceOverride`, `availableUnit` and `isAvailable`.
+**400**: invalid `outletId`. **404**: outlet not found.
 
 ### `POST /menu-item/create`
 

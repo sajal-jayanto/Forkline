@@ -12,7 +12,7 @@ export class HealthService {
     };
   }
 
-  private async checkDatabase(): Promise<boolean> {
+  private async checkDatabase() {
     try {
       await getDataSource().query("SELECT 1");
       return true;

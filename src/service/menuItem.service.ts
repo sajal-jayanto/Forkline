@@ -7,11 +7,24 @@ import { HttpError } from "../middlewares/error.middleware.js";
 import { OutletMenuItemRepository } from "../repository/outletMenuItem.repository.js";
 import { StatusCodes } from "http-status-codes";
 import { OutletRepository } from "../repository/outlet.repository.js";
+import type { GetMenuItemsQuery } from "../schemas/menuItem.schema.js";
 
 export class MenuItemService {
   private menuItemRepository = new MenuItemRepository();
   private outletMenuItemRepository = new OutletMenuItemRepository();
   private outletRepository = new OutletRepository();
+
+  async getAllMenuItems({ outletId }: GetMenuItemsQuery) {
+    if (outletId === undefined) {
+      return this.menuItemRepository.findAll();
+    }
+
+    const isOutletPresent = await this.outletRepository.searchBy({ outletId });
+    if(!isOutletPresent){ 
+      throw new HttpError("Outlet not found." , StatusCodes.NOT_FOUND);
+    }
+    return this.menuItemRepository.findByOutlet({ outletId });
+  }
 
   async createMenuItem(payload : MenuItemDto) {
     const menuItem: MenuItemDto = {

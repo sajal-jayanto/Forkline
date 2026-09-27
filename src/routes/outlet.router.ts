@@ -8,6 +8,14 @@ import { OutletService } from "../service/outlet.service.js";
 export const outletRouter = Router();
 const outletService = new OutletService();
 
+outletRouter.get(
+  "/",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const outlets = await outletService.getAllOutlets();
+    res.status(StatusCodes.OK).json(outlets);
+  })
+);
+
 outletRouter.post(
   "/create", 
   validateSchema({ body: createOutletSchema }),

@@ -56,14 +56,20 @@ export class OutletMenuItemRepository {
 
   async decreaseAvailableUnits(items : { id : number , quantity : number }[], txManager?: EntityManager) {
     try {
-      return await this.repoFor(txManager).query(
-        `UPDATE outlet_menu_items AS omi
-         SET available_unit = omi.available_unit - v.quantity,
-             updated_at = now()
-         FROM unnest($1::int[], $2::int[]) AS v(id, quantity)
-         WHERE omi.id = v.id`,
-        [items.map(item => item.id), items.map(item => item.quantity)]
+      if (items.length === 0) return;
+
+      const cases = items.map((_, i) => `WHEN :id${i} THEN CAST(:quantity${i} AS int)`).join(" ");
+      const parameters = Object.fromEntries(
+        items.flatMap((item, i) => [[`id${i}`, item.id], [`quantity${i}`, item.quantity]])
       );
+
+      return await this.repoFor(txManager)
+        .createQueryBuilder()
+        .update(OutletMenuItem)
+        .set({ availableUnit: () => `available_unit - (CASE id ${cases} END)` })
+        .where("id IN (:...ids)", { ids: items.map(item => item.id) })
+        .setParameters(parameters)
+        .execute();
     } catch (error) {
       throw new HttpError(
         `Failed to decrease available units for outlet menu item ids ${items.map(item => item.id).join(", ")}` , 

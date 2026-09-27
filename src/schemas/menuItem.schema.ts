@@ -39,3 +39,13 @@ export const assignOutletSchema = z.object({
     .int("Available unit must be an integer.")
     .min(0, "Available unit cannot be negative."),
 });
+
+export const getMenuItemsQuerySchema = z.object({
+  outletId: z.coerce
+    .number({ error: "outletId must be a number." })
+    .int("outletId must be an integer.")
+    .positive("outletId must be positive.")
+    .optional(),
+});
+
+export type GetMenuItemsQuery = z.infer<typeof getMenuItemsQuerySchema>;

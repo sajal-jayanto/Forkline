@@ -17,7 +17,31 @@ export class MenuItemRepository {
     try {
       return await this.repoFor(txManager).findOneBy({ id: menuItemId });
     } catch (error) {
-      throw new HttpError(`Failed to excuted find outlet By Id` ,  StatusCodes.EXPECTATION_FAILED, error as Error);
+      throw new HttpError(`Failed to excuted find outlet By Id`, 
+        StatusCodes.EXPECTATION_FAILED, error as Error
+      );
+    }
+  }
+
+  async findAll(txManager?: EntityManager) {
+    try {
+      return await this.repoFor(txManager).find({ order: { id: "ASC" } });
+    } catch (error) {
+      throw new HttpError("Failed to fetch menu items" , StatusCodes.EXPECTATION_FAILED, error as Error);
+    }
+  }
+
+  async findByOutlet({ outletId } : { outletId : number }, txManager?: EntityManager) {
+    try {
+      return await this.repoFor(txManager).find({
+        where: { outletMenuItems: { outletId } },
+        relations: { outletMenuItems: true },
+        order: { id: "ASC" },
+      });
+    } catch (error) {
+      throw new HttpError("Failed to fetch menu items", 
+        StatusCodes.EXPECTATION_FAILED, error as Error
+      );
     }
   }
 
@@ -27,7 +51,9 @@ export class MenuItemRepository {
       const raw = repo.create(payload);
       return await repo.save(raw);
     } catch (error) {
-      throw new HttpError("Failed to create menu item" , StatusCodes.EXPECTATION_FAILED, error as Error);
+      throw new HttpError("Failed to create menu item", 
+        StatusCodes.EXPECTATION_FAILED, error as Error
+      );
     }
   }
 

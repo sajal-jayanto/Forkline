@@ -14,7 +14,7 @@ const initMigrations = async (): Promise<void> => {
     dir: "migrations",
     direction: "up",
     migrationsTable: "pgmigrations",
-    log: (msg: string) => logger.info(msg),
+    // log: (msg: string) => logger.info(msg),
   });
 };
 

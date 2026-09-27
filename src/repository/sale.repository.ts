@@ -19,7 +19,9 @@ export class SaleRepository {
       const raw = repo.create(payload);
       return await repo.save(raw);
     } catch (error) {
-      throw new HttpError("Failed to create sale", StatusCodes.EXPECTATION_FAILED, error as Error);
+      throw new HttpError("Failed to create sale", 
+        StatusCodes.EXPECTATION_FAILED, error as Error
+      );
     }
   }
 
@@ -30,7 +32,9 @@ export class SaleRepository {
         relations: { saleItems: true },
       });
     } catch (error) {
-      throw new HttpError(`Failed to find sale by id ${saleId}`, StatusCodes.EXPECTATION_FAILED, error as Error);
+      throw new HttpError(`Failed to find sale by id ${saleId}`, 
+        StatusCodes.EXPECTATION_FAILED, error as Error
+      );
     }
   }
 

@@ -17,7 +17,8 @@ reportRouter.get(
   "/revenue-by-outlet",
   validateSchema({ query: revenueByOutletQuerySchema }),
   asyncHandler(async (req: Request, res: Response) => {
-    const data = await reportService.revenueByOutlet(req.query as RevenueByOutletQuery);
+    const query  = req.query as RevenueByOutletQuery;
+    const data = await reportService.revenueByOutlet(query);
     res.status(StatusCodes.OK).json(data);
   })
 );
@@ -26,7 +27,8 @@ reportRouter.get(
   "/top-items-by-outlet",
   validateSchema({ query: topItemsByOutletQuerySchema }),
   asyncHandler(async (req: Request, res: Response) => {
-    const data = await reportService.topItemsByOutlet(req.query as unknown as TopItemsByOutletQuery);
+    const query = req.query as unknown as TopItemsByOutletQuery;
+    const data = await reportService.topItemsByOutlet(query);
     res.status(StatusCodes.OK).json(data);
   })
 );

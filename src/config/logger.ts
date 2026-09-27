@@ -1,6 +1,7 @@
 import pino from "pino";
 import { env } from "./env.js";
 
+const isDevelopment = ["development"].includes(env.nodeEnv);
 const transportOption = {
   target: "pino-pretty",
   options: {
@@ -12,8 +13,8 @@ const transportOption = {
 };
 
 const logger = pino({
-  level: env.nodeEnv === "development" ? "debug" : "info",
-  transport: env.nodeEnv === "development" ? transportOption : undefined,
+  level: isDevelopment ? "debug" : "info",
+  ...(isDevelopment && {transport: transportOption})
 });
 
 export { logger };

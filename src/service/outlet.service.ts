@@ -6,6 +6,10 @@ import { OutletDto } from '../entities/outlet.entity.js';
 export class OutletService {
   private outletRepository = new OutletRepository();
   
+  async getAllOutlets() {
+    return this.outletRepository.findAll();
+  }
+
   async createOutlet(payload : OutletDto) {
     const outlet: OutletDto = {
       name: payload.name,

@@ -33,8 +33,8 @@ const createApp = () => {
 
   app.use("/menu-item" , menuItemRouter);
   app.use("/outlet" , outletRouter);
-  app.use("/sale" , sealRouter);
   app.use("/report" , reportRouter);
+  app.use("/sale" , sealRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
