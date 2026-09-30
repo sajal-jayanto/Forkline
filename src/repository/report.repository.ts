@@ -36,8 +36,10 @@ export class ReportRepository {
         .addOrderBy("outlet.id", "ASC")
         .getRawMany<OutletRevenueRow>();
     } catch (error) {
-      throw new HttpError("Failed to get revenue by outlet", 
-        StatusCodes.EXPECTATION_FAILED, error as Error
+      throw new HttpError(
+        "Failed to get revenue by outlet",
+        StatusCodes.EXPECTATION_FAILED,
+        error as Error,
       );
     }
   }
@@ -60,8 +62,10 @@ export class ReportRepository {
         .limit(limit)
         .getRawMany<OutletTopItemRow>();
     } catch (error) {
-      throw new HttpError("Failed to get top items by outlet", 
-        StatusCodes.EXPECTATION_FAILED, error as Error
+      throw new HttpError(
+        "Failed to get top items by outlet",
+        StatusCodes.EXPECTATION_FAILED,
+        error as Error,
       );
     }
   }

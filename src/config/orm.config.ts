@@ -13,13 +13,7 @@ initializeTransactionalContext();
 const dataSource = addTransactionalDataSource(
   new DataSource({
     type: "postgres",
-    entities: [
-      MenuItem, 
-      OutletMenuItem, 
-      Outlet, 
-      SaleItem, 
-      Sale
-    ],
+    entities: [MenuItem, OutletMenuItem, Outlet, SaleItem, Sale],
     host: env.db.host,
     port: env.db.port,
     username: env.db.user,
@@ -27,7 +21,7 @@ const dataSource = addTransactionalDataSource(
     database: env.db.name,
     ssl: env.db.ssl,
     synchronize: false,
-    logging: ["development", "test"].includes(env.nodeEnv)
+    logging: ["development", "test"].includes(env.nodeEnv),
   }),
 );
 

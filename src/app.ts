@@ -1,4 +1,4 @@
-import express , { type Request, type Response }  from "express";
+import express, { type Request, type Response } from "express";
 
 import cors from "cors";
 import helmet from "helmet";
@@ -24,17 +24,17 @@ const createApp = () => {
   app.use(requestLogger);
 
   app.get(
-    "/health", 
-    asyncHandler(async (_req: Request, res: Response) => { 
+    "/health",
+    asyncHandler(async (_req: Request, res: Response) => {
       const health = await healthService.checkHealth();
       res.status(StatusCodes.OK).json(health);
-    })
+    }),
   );
-  
-  app.use("/api/v1/menu-item" , menuItemRouter);
-  app.use("/api/v1/outlet" , outletRouter);
-  app.use("/api/v1/report" , reportRouter);
-  app.use("/api/v1/sale" , sealRouter);
+
+  app.use("/api/v1/menu-item", menuItemRouter);
+  app.use("/api/v1/outlet", outletRouter);
+  app.use("/api/v1/report", reportRouter);
+  app.use("/api/v1/sale", sealRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

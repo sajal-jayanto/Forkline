@@ -22,10 +22,10 @@ const validateSchema =
       if (body) req.body = body.parse(req.body);
       if (params) req.params = params.parse(req.params) as typeof req.params;
       if (query) {
-        const options = { 
-          value: query.parse(req.query), 
-          writable: true, 
-          configurable: true 
+        const options = {
+          value: query.parse(req.query),
+          writable: true,
+          configurable: true,
         };
         Object.defineProperty(req, "query", options);
       }

@@ -20,7 +20,7 @@ const startServer = async () => {
     logger.error(err, "❌ Failed to run migrations, aborting startup");
     process.exit(1);
   });
-  
+
   logger.info("✅ Migrations up to date.");
 
   app.listen(PORT, () => {

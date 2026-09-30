@@ -6,15 +6,8 @@ export const createMenuItemSchema = z.object({
     .trim()
     .min(1, "Item name cannot be empty.")
     .max(255, "Item name must be at most 255 characters."),
-  description: z
-    .string()
-    .trim()
-    .optional(),
-  imageUrl: z
-    .string()
-    .trim()
-    .url("Invalid image URL.")
-    .optional(),
+  description: z.string().trim().optional(),
+  imageUrl: z.string().trim().url("Invalid image URL.").optional(),
   masterPrice: z
     .number({ error: "Master price is required." })
     .positive("Master price must be greater than 0.")

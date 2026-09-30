@@ -23,15 +23,15 @@ Copy the example file and adjust if needed:
 cp .env.example .env
 ```
 
-| Variable      | Default (`.env.example`) | Description                          |
-| ------------- | ------------------------ | ------------------------------------ |
-| `PORT`        | `9000`                   | HTTP port the API listens on         |
+| Variable      | Default (`.env.example`) | Description                           |
+| ------------- | ------------------------ | ------------------------------------- |
+| `PORT`        | `9000`                   | HTTP port the API listens on          |
 | `NODE_ENV`    | `development`            | `development` / `production` / `test` |
-| `DB_HOST`     | `localhost`              | PostgreSQL host                      |
-| `DB_PORT`     | `5432`                   | PostgreSQL port                      |
-| `DB_USER`     | `root`                   | PostgreSQL user                      |
-| `DB_PASSWORD` | `root`                   | PostgreSQL password                  |
-| `DB_NAME`     | `forkline`               | PostgreSQL database name             |
+| `DB_HOST`     | `localhost`              | PostgreSQL host                       |
+| `DB_PORT`     | `5432`                   | PostgreSQL port                       |
+| `DB_USER`     | `root`                   | PostgreSQL user                       |
+| `DB_PASSWORD` | `root`                   | PostgreSQL password                   |
+| `DB_NAME`     | `forkline`               | PostgreSQL database name              |
 
 ### Option A: Run everything with Docker Compose
 
@@ -133,19 +133,19 @@ Base URL: `http://localhost:9000/api/v1` for all routes except `/health`, which 
 }
 ```
 
-| Field         | Type   | Required | Rules           |
-| ------------- | ------ | -------- | --------------- |
-| `name`        | string | yes      | 1–255 chars     |
-| `description` | string | no       | default text if omitted |
+| Field         | Type   | Required | Rules                           |
+| ------------- | ------ | -------- | ------------------------------- |
+| `name`        | string | yes      | 1–255 chars                     |
+| `description` | string | no       | default text if omitted         |
 | `location`    | string | no       | defaults to `Dhaka, Bangladesh` |
 
 **201 Created**: returns the created outlet (a UUID `slug` is generated automatically).
 
 ### `GET /api/v1/menu-item`
 
-| Query param | Type    | Required | Rules                                   |
-| ----------- | ------- | -------- | --------------------------------------- |
-| `outletId`  | integer | no       | > 0; if set, only that outlet's items   |
+| Query param | Type    | Required | Rules                                 |
+| ----------- | ------- | -------- | ------------------------------------- |
+| `outletId`  | integer | no       | > 0; if set, only that outlet's items |
 
 **200 OK**: returns an array of master menu items, ordered by `id`. Without `outletId`, all items are returned. With `outletId`, only items assigned to that outlet are returned, each with an `outletMenuItems` array holding that outlet's `priceOverride`, `availableUnit` and `isAvailable`.
 **400**: invalid `outletId`. **404**: outlet not found.
@@ -161,12 +161,12 @@ Base URL: `http://localhost:9000/api/v1` for all routes except `/health`, which 
 }
 ```
 
-| Field         | Type   | Required | Rules                     |
-| ------------- | ------ | -------- | ------------------------- |
-| `name`        | string | yes      | 1–255 chars               |
-| `description` | string | no       | default text if omitted   |
-| `imageUrl`    | string | no       | valid URL                 |
-| `masterPrice` | number | yes      | > 0, at most 2 decimals   |
+| Field         | Type   | Required | Rules                   |
+| ------------- | ------ | -------- | ----------------------- |
+| `name`        | string | yes      | 1–255 chars             |
+| `description` | string | no       | default text if omitted |
+| `imageUrl`    | string | no       | valid URL               |
+| `masterPrice` | number | yes      | > 0, at most 2 decimals |
 
 **201 Created**: returns the created menu item.
 
@@ -207,12 +207,12 @@ Records a sale. Everything happens in one database transaction: stock is checked
 }
 ```
 
-| Field                | Type    | Required | Rules            |
-| -------------------- | ------- | -------- | ---------------- |
-| `outletId`           | integer | yes      | > 0              |
-| `items`              | array   | yes      | at least 1 item  |
-| `items[].menuItemId` | integer | yes      | > 0              |
-| `items[].quantity`   | integer | yes      | > 0              |
+| Field                | Type    | Required | Rules           |
+| -------------------- | ------- | -------- | --------------- |
+| `outletId`           | integer | yes      | > 0             |
+| `items`              | array   | yes      | at least 1 item |
+| `items[].menuItemId` | integer | yes      | > 0             |
+| `items[].quantity`   | integer | yes      | > 0             |
 
 Behavior:
 
@@ -290,67 +290,67 @@ In `development` a `stack` field is also included. Unknown routes return `404`.
 
 ### `menu_items`: HQ's master catalog
 
-| Column         | Type          | Notes                          |
-| -------------- | ------------- | ------------------------------ |
-| `id`           | SERIAL PK     |                                |
-| `name`         | VARCHAR(255)  |                                |
-| `slug`         | VARCHAR(255)  | unique, auto-generated UUID    |
-| `description`  | TEXT          |                                |
-| `image_url`    | VARCHAR(500)  |                                |
-| `master_price` | NUMERIC(10,2) | default price, `>= 0`          |
-| `is_active`    | BOOLEAN       | default `true`                 |
-| `created_at` / `updated_at` | TIMESTAMP |                    |
+| Column                      | Type          | Notes                       |
+| --------------------------- | ------------- | --------------------------- |
+| `id`                        | SERIAL PK     |                             |
+| `name`                      | VARCHAR(255)  |                             |
+| `slug`                      | VARCHAR(255)  | unique, auto-generated UUID |
+| `description`               | TEXT          |                             |
+| `image_url`                 | VARCHAR(500)  |                             |
+| `master_price`              | NUMERIC(10,2) | default price, `>= 0`       |
+| `is_active`                 | BOOLEAN       | default `true`              |
+| `created_at` / `updated_at` | TIMESTAMP     |                             |
 
 ### `outlets`
 
-| Column        | Type         | Notes                       |
-| ------------- | ------------ | --------------------------- |
-| `id`          | SERIAL PK    |                             |
-| `name`        | VARCHAR(255) |                             |
-| `slug`        | VARCHAR(255) | unique, auto-generated UUID |
-| `description` | TEXT         |                             |
-| `location`    | VARCHAR(500) |                             |
-| `is_active`   | BOOLEAN      | default `true`              |
-| `created_at` / `updated_at` | TIMESTAMP |                 |
+| Column                      | Type         | Notes                       |
+| --------------------------- | ------------ | --------------------------- |
+| `id`                        | SERIAL PK    |                             |
+| `name`                      | VARCHAR(255) |                             |
+| `slug`                      | VARCHAR(255) | unique, auto-generated UUID |
+| `description`               | TEXT         |                             |
+| `location`                  | VARCHAR(500) |                             |
+| `is_active`                 | BOOLEAN      | default `true`              |
+| `created_at` / `updated_at` | TIMESTAMP    |                             |
 
 ### `outlet_menu_items`: which items an outlet sells, at what price, with how much stock
 
-| Column           | Type          | Notes                                        |
-| ---------------- | ------------- | -------------------------------------------- |
-| `id`             | SERIAL PK     |                                              |
-| `outlet_id`      | FK → outlets  | `ON DELETE CASCADE`                          |
-| `menu_item_id`   | FK → menu_items | `ON DELETE CASCADE`                        |
-| `price_override` | NUMERIC(10,2) | nullable; if NULL, `master_price` is used    |
-| `available_unit` | INT           | stock on hand, `>= 0` (DB-enforced)          |
-| `is_available`   | BOOLEAN       | lets an outlet switch an item off without deleting it |
-| `created_at` / `updated_at` | TIMESTAMP |                                    |
+| Column                      | Type            | Notes                                                 |
+| --------------------------- | --------------- | ----------------------------------------------------- |
+| `id`                        | SERIAL PK       |                                                       |
+| `outlet_id`                 | FK → outlets    | `ON DELETE CASCADE`                                   |
+| `menu_item_id`              | FK → menu_items | `ON DELETE CASCADE`                                   |
+| `price_override`            | NUMERIC(10,2)   | nullable; if NULL, `master_price` is used             |
+| `available_unit`            | INT             | stock on hand, `>= 0` (DB-enforced)                   |
+| `is_available`              | BOOLEAN         | lets an outlet switch an item off without deleting it |
+| `created_at` / `updated_at` | TIMESTAMP       |                                                       |
 
 `UNIQUE (outlet_id, menu_item_id)`: an item can be assigned to an outlet only once.
 
 ### `sales`: one row per receipt
 
-| Column           | Type          | Notes                              |
-| ---------------- | ------------- | ---------------------------------- |
-| `id`             | SERIAL PK     |                                    |
-| `outlet_id`      | FK → outlets  | `ON DELETE RESTRICT` (sales history is never lost) |
-| `receipt_number` | INT           | sequential **per outlet**          |
-| `tax_amount`     | NUMERIC(10,2) | `>= 0`                             |
-| `total_amount`   | NUMERIC(10,2) | `>= 0`                             |
-| `created_at` / `updated_at` | TIMESTAMP |                         |
+| Column                      | Type          | Notes                                              |
+| --------------------------- | ------------- | -------------------------------------------------- |
+| `id`                        | SERIAL PK     |                                                    |
+| `outlet_id`                 | FK → outlets  | `ON DELETE RESTRICT` (sales history is never lost) |
+| `receipt_number`            | INT           | sequential **per outlet**                          |
+| `tax_amount`                | NUMERIC(10,2) | `>= 0`                                             |
+| `total_amount`              | NUMERIC(10,2) | `>= 0`                                             |
+| `created_at` / `updated_at` | TIMESTAMP     |                                                    |
 
 `UNIQUE (outlet_id, receipt_number)`: every outlet has its own receipt sequence (1, 2, 3 …).
 
 ### `sale_items`: line items of a sale
 
-| Column                | Type                  | Notes                                  |
-| --------------------- | --------------------- | -------------------------------------- |
-| `id`                  | SERIAL PK             |                                        |
-| `sale_id`             | FK → sales            | `ON DELETE CASCADE`                    |
-| `outlet_menu_item_id` | FK → outlet_menu_items | `ON DELETE RESTRICT`                  |
-| `quantity`            | INT                   | `> 0`                                  |
-| `unit_price`          | NUMERIC(10,2)         | price **snapshot** at time of sale     |
-| `subtotal`            | NUMERIC(10,2)         | `unit_price × quantity`                |
-| `created_at` / `updated_at` | TIMESTAMP       |                                        |
+| Column                      | Type                   | Notes                              |
+| --------------------------- | ---------------------- | ---------------------------------- |
+| `id`                        | SERIAL PK              |                                    |
+| `sale_id`                   | FK → sales             | `ON DELETE CASCADE`                |
+| `outlet_menu_item_id`       | FK → outlet_menu_items | `ON DELETE RESTRICT`               |
+| `quantity`                  | INT                    | `> 0`                              |
+| `unit_price`                | NUMERIC(10,2)          | price **snapshot** at time of sale |
+| `subtotal`                  | NUMERIC(10,2)          | `unit_price × quantity`            |
+| `created_at` / `updated_at` | TIMESTAMP              |                                    |
 
 `UNIQUE (sale_id, outlet_menu_item_id)`: one line per item per sale.
 
@@ -400,16 +400,16 @@ Repository    src/repository/*.repository.ts   all DB access (TypeORM / SQL)
 PostgreSQL    tables defined by SQL migrations in migrations/
 ```
 
-| Folder              | Responsibility |
-| ------------------- | -------------- |
-| `src/config/`       | Env loading, pino logger, TypeORM `DataSource` |
-| `src/db/`           | DataSource initialization, migrations run on startup |
-| `src/entities/`     | TypeORM entity classes that map to the tables |
-| `src/schemas/`      | Zod request schemas (body/query validation) |
-| `src/routes/`       | Express routers. Thin: validate, call a service, send the response |
-| `src/service/`      | Business logic. Has no knowledge of HTTP beyond throwing `HttpError` |
-| `src/repository/`   | Data access. Methods accept an optional `EntityManager` so they can join a transaction |
-| `src/middlewares/`  | Async error wrapper, validation, 404 handling, central error handler, request logging |
+| Folder             | Responsibility                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `src/config/`      | Env loading, pino logger, TypeORM `DataSource`                                         |
+| `src/db/`          | DataSource initialization, migrations run on startup                                   |
+| `src/entities/`    | TypeORM entity classes that map to the tables                                          |
+| `src/schemas/`     | Zod request schemas (body/query validation)                                            |
+| `src/routes/`      | Express routers. Thin: validate, call a service, send the response                     |
+| `src/service/`     | Business logic. Has no knowledge of HTTP beyond throwing `HttpError`                   |
+| `src/repository/`  | Data access. Methods accept an optional `EntityManager` so they can join a transaction |
+| `src/middlewares/` | Async error wrapper, validation, 404 handling, central error handler, request logging  |
 
 ### Startup sequence ([src/server.ts](src/server.ts))
 
@@ -459,15 +459,15 @@ The plan does not need to be implemented yet. It explains how the current design
 
 Sizing the load first shows which changes are actually needed.
 
-| Metric                                  | Estimate                                   |
-| --------------------------------------- | ------------------------------------------ |
-| Sales per month                         | 100,000                                    |
-| Sales per day                           | ~3,300 (~330 per outlet)                   |
-| Average rate over a 12-hour trading day | ~280 sales/hour ≈ **0.08 sales/second**    |
-| Peak rate (lunch/dinner, ~5–10× average) | **~1–2 sales/second** across all outlets  |
-| `sales` rows per year                   | ~1.2 million                               |
-| `sale_items` rows per year (~3 lines/sale) | ~3.6 million                            |
-| Storage growth (data + indexes)         | roughly **1–2 GB per year**                |
+| Metric                                     | Estimate                                 |
+| ------------------------------------------ | ---------------------------------------- |
+| Sales per month                            | 100,000                                  |
+| Sales per day                              | ~3,300 (~330 per outlet)                 |
+| Average rate over a 12-hour trading day    | ~280 sales/hour ≈ **0.08 sales/second**  |
+| Peak rate (lunch/dinner, ~5–10× average)   | **~1–2 sales/second** across all outlets |
+| `sales` rows per year                      | ~1.2 million                             |
+| `sale_items` rows per year (~3 lines/sale) | ~3.6 million                             |
+| Storage growth (data + indexes)            | roughly **1–2 GB per year**              |
 
 **Conclusion:** the write load is small. One PostgreSQL instance can handle thousands of simple transactions per second, and this target needs about 2 at peak. Writes will not be the bottleneck. The real risks are:
 
@@ -490,7 +490,7 @@ CREATE INDEX idx_sales_outlet_created ON sales (outlet_id, created_at) INCLUDE (
 CREATE INDEX idx_sales_created_at ON sales (created_at);
 ```
 
-**b) Fix the receipt-number race.** `receipt_number` is currently `MAX(receipt_number) + 1` inside the sale transaction. The `FOR UPDATE` lock covers only the `outlet_menu_items` rows being sold. Two tills at the same outlet selling *different* items at the same moment can read the same `MAX` value, and one of them then fails on `UNIQUE (outlet_id, receipt_number)`. With 10 busy outlets this will happen at peak times. Fix it with a per-outlet counter row that serializes only receipt issuance:
+**b) Fix the receipt-number race.** `receipt_number` is currently `MAX(receipt_number) + 1` inside the sale transaction. The `FOR UPDATE` lock covers only the `outlet_menu_items` rows being sold. Two tills at the same outlet selling _different_ items at the same moment can read the same `MAX` value, and one of them then fails on `UNIQUE (outlet_id, receipt_number)`. With 10 busy outlets this will happen at peak times. Fix it with a per-outlet counter row that serializes only receipt issuance:
 
 ```sql
 CREATE TABLE outlet_receipt_counters (
@@ -514,7 +514,7 @@ This also replaces a `MAX()` over a growing table with a single-row update.
 
 ### 5.3 Reporting performance considerations
 
-Reports are read-heavy, used mainly by HQ, and mostly about *past* days, whose data never changes. Three steps, in order:
+Reports are read-heavy, used mainly by HQ, and mostly about _past_ days, whose data never changes. Three steps, in order:
 
 **1. Daily rollup tables (main change).**
 
@@ -552,32 +552,35 @@ Also add pagination/limits for any future list endpoints, such as a sales histor
 
 ### 5.4 Infrastructure considerations
 
-| Area                | Today                                   | At 10 outlets / 100k per month |
-| ------------------- | --------------------------------------- | -------------------------------- |
-| Database            | Postgres container with a Docker volume | **Managed PostgreSQL** (RDS / Cloud SQL / Azure) with automated backups, point-in-time recovery and a Multi-AZ standby. A modest instance (2 vCPU / 4–8 GB RAM) is plenty. |
-| API                 | Single container                        | **2–3 stateless replicas** behind a load balancer, for zero-downtime deploys and fault tolerance rather than throughput. Autoscale on CPU / p95 latency. |
-| Migrations          | Run on every API startup                | Run as a **separate release step** (CI/CD job or Kubernetes init job) before new pods roll out. `node-pg-migrate`'s advisory lock already makes concurrent startup safe, but a separate step makes failures visible and keeps startup fast. |
-| Secrets             | `.env` file                             | Secrets manager (AWS Secrets Manager / Vault). No default `root/root` credentials. |
-| Security            | Open API                                | **Authentication + roles**: HQ (catalog, reports) vs. outlet staff (sales for their own outlet only). TLS at the load balancer. Rate limiting per client. |
-| Observability       | pino logs to stdout                     | Central logs (Loki / ELK / CloudWatch). Metrics (Prometheus / Grafana): request rate, p95 latency, error rate, DB pool usage, **409 rate on sales** (a stock-contention signal). Alerts on `/health`. Optional tracing with OpenTelemetry. |
-| Backups / DR        | None                                    | Daily snapshots + WAL archiving (PITR). Regular restore tests. RPO ≤ 5 min, RTO ≤ 1 hour. |
-| Environments        | Local only                              | CI pipeline (lint, tests, build image), then staging, then production. |
+| Area          | Today                                   | At 10 outlets / 100k per month                                                                                                                                                                                                              |
+| ------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Database      | Postgres container with a Docker volume | **Managed PostgreSQL** (RDS / Cloud SQL / Azure) with automated backups, point-in-time recovery and a Multi-AZ standby. A modest instance (2 vCPU / 4–8 GB RAM) is plenty.                                                                  |
+| API           | Single container                        | **2–3 stateless replicas** behind a load balancer, for zero-downtime deploys and fault tolerance rather than throughput. Autoscale on CPU / p95 latency.                                                                                    |
+| Migrations    | Run on every API startup                | Run as a **separate release step** (CI/CD job or Kubernetes init job) before new pods roll out. `node-pg-migrate`'s advisory lock already makes concurrent startup safe, but a separate step makes failures visible and keeps startup fast. |
+| Secrets       | `.env` file                             | Secrets manager (AWS Secrets Manager / Vault). No default `root/root` credentials.                                                                                                                                                          |
+| Security      | Open API                                | **Authentication + roles**: HQ (catalog, reports) vs. outlet staff (sales for their own outlet only). TLS at the load balancer. Rate limiting per client.                                                                                   |
+| Observability | pino logs to stdout                     | Central logs (Loki / ELK / CloudWatch). Metrics (Prometheus / Grafana): request rate, p95 latency, error rate, DB pool usage, **409 rate on sales** (a stock-contention signal). Alerts on `/health`. Optional tracing with OpenTelemetry.  |
+| Backups / DR  | None                                    | Daily snapshots + WAL archiving (PITR). Regular restore tests. RPO ≤ 5 min, RTO ≤ 1 hour.                                                                                                                                                   |
+| Environments  | Local only                              | CI pipeline (lint, tests, build image), then staging, then production.                                                                                                                                                                      |
 
 ### 5.5 Architectural evolution
 
 The current layered monolith (router → service → repository) is the right architecture for this target. Splitting it into microservices would add network hops and distributed transactions to what is currently a single ACID transaction (stock + sale + receipt). The evolution is incremental:
 
 **Phase 1: reach the 10-outlet target (the changes above)**
+
 - Composite `created_at` indexes, receipt counter table, idempotency keys, `TIMESTAMPTZ`.
 - Daily rollup tables updated in the sale transaction; reports read from them.
 - Managed Postgres with backups, 2+ API replicas, authentication/roles, monitoring.
 
 **Phase 2: resilient outlets and decoupled side effects**
+
 - **Offline-tolerant POS.** An outlet must keep selling when its internet drops. The POS client queues sales locally with a client-generated idempotency key and syncs when it reconnects. The server-side idempotency from 5.2c makes replays safe. Stock conflicts found during sync are flagged for review rather than rejected silently.
 - **Transactional outbox.** The sale transaction also writes a `sale.created` row to an `outbox` table. A worker publishes these events to a queue (SQS / RabbitMQ) for side effects that must not slow down or fail a sale: low-stock alerts to HQ, accounting/ERP export, receipts by SMS/email, and eventually rollup maintenance.
 - **Modular monolith.** Keep one deployable, but enforce module boundaries (catalog, outlets, sales, inventory, reporting) so any of them could be extracted later.
 
 **Phase 3: well beyond the target (e.g. 100+ outlets, millions of sales per month)**
+
 - Monthly partitioning of `sales` / `sale_items`, with old partitions archived to cheap storage.
 - Change data capture (Debezium / logical replication) into an analytics store (ClickHouse, BigQuery) for BI dashboards and ad-hoc analysis. The OLTP database then serves only operational reads.
 - Extract **reporting** as its own service fed by events. It has different scaling and freshness needs from the sale path, so it's the first natural candidate for extraction.
@@ -589,7 +592,7 @@ The current layered monolith (router → service → repository) is the right ar
 
 ## 6. Conversion to Microservices
 
-Section 5.5 argues that a monolith is right for the current target. This section describes what the system would look like *if* it grows to the point where separate services pay off: many more outlets, several teams working on it, or parts of the system that need to scale or deploy independently.
+Section 5.5 argues that a monolith is right for the current target. This section describes what the system would look like _if_ it grows to the point where separate services pay off: many more outlets, several teams working on it, or parts of the system that need to scale or deploy independently.
 
 ### 6.1 Guiding rule: split along data ownership, not along layers
 
@@ -627,15 +630,15 @@ The code already has natural seams: each domain has its own router → service �
                     └─────────────┘  └──────────────┘  └──────────────┘
 ```
 
-| Service | Owns (tables) | Why separate it |
-| ------- | ------------- | --------------- |
-| **Catalog** | `menu_items`, `outlets`, `outlet_menu_items` pricing and assignment | Changed only by HQ, rarely, and read constantly. It can be cached aggressively and scaled for reads. Its release cycle (new menus, price changes) has nothing to do with the sale path. |
-| **Sales & Inventory** | `sales`, `sale_items`, stock levels, receipt counters | This is the critical write path. Stock check, stock decrement, receipt number and sale insert **must stay in one ACID transaction** (see 4, "Sale flow"). Splitting sales from inventory would replace one transaction with a saga and create windows where stock and sales disagree, so they stay together. |
-| **Reporting** | Rollup tables / analytics store (its own copy of the data) | Read-heavy, used by HQ, tolerant of a few seconds of lag, with very different query patterns (large scans, aggregations). It is fed by `sale.created` events and never touches the sales database, so a heavy report can never slow down a till. This is the **first** service to extract. |
-| **Kitchen (KDS)** | Kitchen tickets and their status (`NEW → IN_PROGRESS → READY → SERVED`) | Has real-time needs (WebSockets) and different load (open connections, not transactions). A KDS problem must never block taking payment. |
-| **Notification** | Delivery logs | Talks to slow, unreliable third parties (SMS, email). Must be asynchronous and retryable, and must never be part of a sale's transaction. |
-| **Identity & Access** | Users, roles, outlet membership | Auth is cross-cutting. HQ staff vs. outlet staff scoping is needed by every service, so it's issued once as a JWT and verified locally by each service. |
-| **Outlet Sync** | Per-outlet sync cursors, ingestion log | Receives batched offline sales from outlets (see section 7) and replays them into Sales & Inventory idempotently. It absorbs bursty reconnect traffic so the live sale path doesn't have to. |
+| Service               | Owns (tables)                                                           | Why separate it                                                                                                                                                                                                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Catalog**           | `menu_items`, `outlets`, `outlet_menu_items` pricing and assignment     | Changed only by HQ, rarely, and read constantly. It can be cached aggressively and scaled for reads. Its release cycle (new menus, price changes) has nothing to do with the sale path.                                                                                                                      |
+| **Sales & Inventory** | `sales`, `sale_items`, stock levels, receipt counters                   | This is the critical write path. Stock check, stock decrement, receipt number and sale insert **must stay in one ACID transaction** (see 4, "Sale flow"). Splitting sales from inventory would replace one transaction with a saga and create windows where stock and sales disagree, so they stay together. |
+| **Reporting**         | Rollup tables / analytics store (its own copy of the data)              | Read-heavy, used by HQ, tolerant of a few seconds of lag, with very different query patterns (large scans, aggregations). It is fed by `sale.created` events and never touches the sales database, so a heavy report can never slow down a till. This is the **first** service to extract.                   |
+| **Kitchen (KDS)**     | Kitchen tickets and their status (`NEW → IN_PROGRESS → READY → SERVED`) | Has real-time needs (WebSockets) and different load (open connections, not transactions). A KDS problem must never block taking payment.                                                                                                                                                                     |
+| **Notification**      | Delivery logs                                                           | Talks to slow, unreliable third parties (SMS, email). Must be asynchronous and retryable, and must never be part of a sale's transaction.                                                                                                                                                                    |
+| **Identity & Access** | Users, roles, outlet membership                                         | Auth is cross-cutting. HQ staff vs. outlet staff scoping is needed by every service, so it's issued once as a JWT and verified locally by each service.                                                                                                                                                      |
+| **Outlet Sync**       | Per-outlet sync cursors, ingestion log                                  | Receives batched offline sales from outlets (see section 7) and replays them into Sales & Inventory idempotently. It absorbs bursty reconnect traffic so the live sale path doesn't have to.                                                                                                                 |
 
 ### 6.3 How the services communicate
 
@@ -694,14 +697,14 @@ This makes offline mode the **normal** code path, not an emergency branch: the P
 
 ### 7.2 What the hub keeps locally
 
-| Data | Source | Purpose offline |
-| ---- | ------ | --------------- |
-| Menu items, outlet assignments, prices, `is_available` | Pulled from HQ (Catalog) | The POS can build orders and compute totals with correct prices. |
-| Stock levels (`available_unit`) | Pulled from HQ, then decremented locally for every sale | Prevents selling what the outlet clearly doesn't have. |
-| Receipt counter | Owned by the hub | Issues gap-free, unique receipt numbers without asking HQ. |
-| Sales + sale items | Created locally | The record of truth until HQ confirms it. |
-| Outbox (`sync_queue`) | Written in the same local transaction as each sale | The list of what still has to be sent to HQ. |
-| Kitchen tickets | Created from each order | Drives the KDS. |
+| Data                                                   | Source                                                  | Purpose offline                                                  |
+| ------------------------------------------------------ | ------------------------------------------------------- | ---------------------------------------------------------------- |
+| Menu items, outlet assignments, prices, `is_available` | Pulled from HQ (Catalog)                                | The POS can build orders and compute totals with correct prices. |
+| Stock levels (`available_unit`)                        | Pulled from HQ, then decremented locally for every sale | Prevents selling what the outlet clearly doesn't have.           |
+| Receipt counter                                        | Owned by the hub                                        | Issues gap-free, unique receipt numbers without asking HQ.       |
+| Sales + sale items                                     | Created locally                                         | The record of truth until HQ confirms it.                        |
+| Outbox (`sync_queue`)                                  | Written in the same local transaction as each sale      | The list of what still has to be sent to HQ.                     |
+| Kitchen tickets                                        | Created from each order                                 | Drives the KDS.                                                  |
 
 ### 7.3 Making sales safe to replay
 
@@ -738,17 +741,17 @@ The current API assigns IDs and receipt numbers on the server, which doesn't wor
 
 An offline sale **already happened**: the customer paid and ate. HQ must never reject it, only record and flag.
 
-| Conflict | Resolution |
-| -------- | ---------- |
-| Stock at HQ would go below zero | Accept the sale. Allow stock to go negative or clamp at 0, and create a `stock_discrepancy` record for the outlet manager. For synced sales, the `CHECK (available_unit >= 0)` path is replaced by this reconciliation step. |
-| Price changed at HQ while the outlet was offline | Keep the price the outlet actually charged (`price_snapshot`). Revenue must match the cash in the drawer. |
-| Item unassigned or marked unavailable while offline | Accept the sale and flag it for review. |
-| Same `client_reference` sent twice | Return `duplicate`. No effect. |
-| Receipt number already used (should not happen) | Reject that one sale with a clear error. It stays in the hub's queue as a **dead letter** and is shown on an HQ dashboard for manual resolution. It never blocks the rest of the queue. |
+| Conflict                                            | Resolution                                                                                                                                                                                                                   |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stock at HQ would go below zero                     | Accept the sale. Allow stock to go negative or clamp at 0, and create a `stock_discrepancy` record for the outlet manager. For synced sales, the `CHECK (available_unit >= 0)` path is replaced by this reconciliation step. |
+| Price changed at HQ while the outlet was offline    | Keep the price the outlet actually charged (`price_snapshot`). Revenue must match the cash in the drawer.                                                                                                                    |
+| Item unassigned or marked unavailable while offline | Accept the sale and flag it for review.                                                                                                                                                                                      |
+| Same `client_reference` sent twice                  | Return `duplicate`. No effect.                                                                                                                                                                                               |
+| Receipt number already used (should not happen)     | Reject that one sale with a clear error. It stays in the hub's queue as a **dead letter** and is shown on an HQ dashboard for manual resolution. It never blocks the rest of the queue.                                      |
 
 **Visibility**
 
-- HQ stores `last_synced_at` and `pending_count` per outlet. Reports show a banner such as *"Outlet Gulshan: data up to 14:32, 37 sales pending sync"*, so HQ doesn't mistake an offline outlet for a slow day.
+- HQ stores `last_synced_at` and `pending_count` per outlet. Reports show a banner such as _"Outlet Gulshan: data up to 14:32, 37 sales pending sync"_, so HQ doesn't mistake an offline outlet for a slow day.
 - The POS shows a clear **online / offline / syncing (n pending)** indicator. Alerts fire if an outlet has been offline or has unsynced sales for more than a set time (e.g. 30 minutes).
 
 ### 7.5 Keeping POS and KDS working together offline
@@ -766,13 +769,13 @@ The POS and KDS communicate **over the outlet LAN through the hub**, so an inter
 
 **Resilience inside the outlet (the hub or the LAN fails)**
 
-| Failure | Behaviour |
-| ------- | --------- |
-| Internet down | No visible effect on POS/KDS. Only HQ sync pauses. |
-| One POS terminal fails | Other terminals keep working. All state is on the hub. |
-| KDS screen reboots | Re-subscribes and pulls open tickets from the hub. |
-| Hub fails | POS terminals keep a local queue (IndexedDB/SQLite) and **fall back to talking to the KDS directly**. KDS devices announce themselves on the LAN (mDNS) and accept tickets peer-to-peer. When the hub returns, the POS pushes its queued sales to the hub, and the hub syncs them to HQ as usual. A second machine can act as a warm standby hub. |
-| Everything on the LAN fails | Last resort: the POS prints kitchen tickets on a **kitchen printer**, the traditional fallback every restaurant already understands. |
+| Failure                     | Behaviour                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Internet down               | No visible effect on POS/KDS. Only HQ sync pauses.                                                                                                                                                                                                                                                                                                |
+| One POS terminal fails      | Other terminals keep working. All state is on the hub.                                                                                                                                                                                                                                                                                            |
+| KDS screen reboots          | Re-subscribes and pulls open tickets from the hub.                                                                                                                                                                                                                                                                                                |
+| Hub fails                   | POS terminals keep a local queue (IndexedDB/SQLite) and **fall back to talking to the KDS directly**. KDS devices announce themselves on the LAN (mDNS) and accept tickets peer-to-peer. When the hub returns, the POS pushes its queued sales to the hub, and the hub syncs them to HQ as usual. A second machine can act as a warm standby hub. |
+| Everything on the LAN fails | Last resort: the POS prints kitchen tickets on a **kitchen printer**, the traditional fallback every restaurant already understands.                                                                                                                                                                                                              |
 
 **Physical setup:** the hub, network switch and Wi-Fi access point are on a UPS. KDS screens are wired over Ethernet where possible. The POS, KDS and hub software are delivered as an installable/PWA app with all assets cached, so no screen needs the internet to start up.
 

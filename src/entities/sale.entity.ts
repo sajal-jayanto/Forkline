@@ -14,10 +14,10 @@ import { Outlet } from "./outlet.entity.js";
 import { SaleItem } from "./sale-item.entity.js";
 
 export interface SaleDto {
-  outletId: number,
-  receiptNumber: number,
-  taxAmount: string,
-  totalAmount: string,
+  outletId: number;
+  receiptNumber: number;
+  taxAmount: string;
+  totalAmount: string;
 }
 
 @Entity({ name: "sales" })

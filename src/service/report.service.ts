@@ -11,7 +11,7 @@ export class ReportService {
   async revenueByOutlet() {
     const rows = await this.reportRepository.revenueByOutlet();
 
-    const sales = rows.map(row => ({
+    const sales = rows.map((row) => ({
       outletId: row.outletId,
       outletName: row.outletName,
       totalSales: Number(row.totalSales),
@@ -25,7 +25,7 @@ export class ReportService {
     };
   }
 
-  async topItemsByOutlet(outletId : number) {
+  async topItemsByOutlet(outletId: number) {
     const outlet = await this.outletRepository.searchBy({ outletId });
 
     if (!outlet) {
@@ -37,7 +37,7 @@ export class ReportService {
     return {
       outletId: outlet.id,
       outletName: outlet.name,
-      items: rows.map(row => ({
+      items: rows.map((row) => ({
         menuItemId: row.menuItemId,
         menuItemName: row.menuItemName,
         quantitySold: Number(row.quantitySold),

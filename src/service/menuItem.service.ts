@@ -1,6 +1,6 @@
 import { MenuItemDto } from "../entities/menu-item.entity.js";
 import { MenuItemRepository } from "../repository/menuItem.repository.js";
-import { v4 as uuIdv4 } from 'uuid';
+import { v4 as uuIdv4 } from "uuid";
 import { demoDescription, demoUrl } from "../utils.js";
 import { OutletMenuItemDto } from "../entities/outlet-menu-item.entity.js";
 import { HttpError } from "../middlewares/error.middleware.js";
@@ -20,13 +20,13 @@ export class MenuItemService {
     }
 
     const isOutletPresent = await this.outletRepository.searchBy({ outletId });
-    if(!isOutletPresent){ 
-      throw new HttpError("Outlet not found." , StatusCodes.NOT_FOUND);
+    if (!isOutletPresent) {
+      throw new HttpError("Outlet not found.", StatusCodes.NOT_FOUND);
     }
     return this.menuItemRepository.findByOutlet({ outletId });
   }
 
-  async createMenuItem(payload : MenuItemDto) {
+  async createMenuItem(payload: MenuItemDto) {
     const menuItem: MenuItemDto = {
       name: payload.name,
       slug: uuIdv4(),
@@ -34,35 +34,37 @@ export class MenuItemService {
       imageUrl: payload.imageUrl ?? demoUrl,
       masterPrice: payload.masterPrice,
       isActive: true,
-    }
+    };
     return this.menuItemRepository.create(menuItem);
   }
 
-  async assignOutlet(payload: OutletMenuItemDto){
-    const { outletId , menuItemId } = payload;
-    
+  async assignOutlet(payload: OutletMenuItemDto) {
+    const { outletId, menuItemId } = payload;
+
     const isOutletPresent = await this.outletRepository.searchBy({ outletId });
-    if(!isOutletPresent){ 
-      throw new HttpError("Outlet not found." , StatusCodes.NOT_FOUND);
+    if (!isOutletPresent) {
+      throw new HttpError("Outlet not found.", StatusCodes.NOT_FOUND);
     }
 
     const ismenuItemPresent = await this.menuItemRepository.searchBy({ menuItemId });
-    if(!ismenuItemPresent){ 
-      throw new HttpError("menu Item not found." , StatusCodes.NOT_FOUND);
+    if (!ismenuItemPresent) {
+      throw new HttpError("menu Item not found.", StatusCodes.NOT_FOUND);
     }
 
-    const isAssignPresent = await this.outletMenuItemRepository.searchOneBy({ outletId , menuItemId });
-    if(isAssignPresent){ 
-      throw new HttpError("This item is assign to this outlet all ready." , StatusCodes.CONFLICT);
+    const isAssignPresent = await this.outletMenuItemRepository.searchOneBy({
+      outletId,
+      menuItemId,
+    });
+    if (isAssignPresent) {
+      throw new HttpError("This item is assign to this outlet all ready.", StatusCodes.CONFLICT);
     }
 
-    const outletMenuItem ={
+    const outletMenuItem = {
       outletId: Number(outletId),
       menuItemId: Number(menuItemId),
       priceOverride: payload.priceOverride,
       availableUnit: Number(payload.availableUnit),
-    }
+    };
     return this.outletMenuItemRepository.createOne(outletMenuItem);
   }
 }
-

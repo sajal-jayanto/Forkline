@@ -16,7 +16,5 @@ export const createNewSaleSchema = z.object({
     .number({ error: "Outlet ID is required." })
     .int("Outlet ID must be an integer.")
     .positive("Outlet ID must be positive."),
-  items: z
-    .array(saleItemSchema)
-    .min(1, { error: "At least one menu item is required." }),
+  items: z.array(saleItemSchema).min(1, { error: "At least one menu item is required." }),
 });

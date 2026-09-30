@@ -13,30 +13,39 @@ export class OutletMenuItemRepository {
     return txManager ? txManager.getRepository(OutletMenuItem) : this.repo;
   }
 
-  async createOne(payload : OutletMenuItemDto, txManager?: EntityManager){
+  async createOne(payload: OutletMenuItemDto, txManager?: EntityManager) {
     try {
       const repo = this.repoFor(txManager);
       const raw = repo.create(payload);
       return await repo.save(raw);
     } catch (error) {
-      throw new HttpError("Failed to create outlet", 
-        StatusCodes.EXPECTATION_FAILED, error as Error
+      throw new HttpError(
+        "Failed to create outlet",
+        StatusCodes.EXPECTATION_FAILED,
+        error as Error,
       );
     }
   }
 
-  async searchOneBy({ outletId , menuItemId } : { outletId : number , menuItemId : number}, txManager?: EntityManager) {
+  async searchOneBy(
+    { outletId, menuItemId }: { outletId: number; menuItemId: number },
+    txManager?: EntityManager,
+  ) {
     try {
       return await this.repoFor(txManager).findOneBy({ outletId, menuItemId });
     } catch (error) {
       throw new HttpError(
-        `Failed to search item outlet id ${outletId} and menu item id ${menuItemId}` , 
-        StatusCodes.EXPECTATION_FAILED, error as Error
+        `Failed to search item outlet id ${outletId} and menu item id ${menuItemId}`,
+        StatusCodes.EXPECTATION_FAILED,
+        error as Error,
       );
     }
   }
 
-  async searchManyForUpdate({ outletId , menuItemIds } : { outletId : number , menuItemIds : number[] }, txManager: EntityManager) {
+  async searchManyForUpdate(
+    { outletId, menuItemIds }: { outletId: number; menuItemIds: number[] },
+    txManager: EntityManager,
+  ) {
     try {
       return await this.repoFor(txManager)
         .createQueryBuilder("omi")
@@ -48,32 +57,40 @@ export class OutletMenuItemRepository {
         .getMany();
     } catch (error) {
       throw new HttpError(
-        `Failed to search items for outlet id ${outletId}` , 
-        StatusCodes.EXPECTATION_FAILED, error as Error
+        `Failed to search items for outlet id ${outletId}`,
+        StatusCodes.EXPECTATION_FAILED,
+        error as Error,
       );
     }
   }
 
-  async decreaseAvailableUnits(items : { id : number , quantity : number }[], txManager?: EntityManager) {
+  async decreaseAvailableUnits(
+    items: { id: number; quantity: number }[],
+    txManager?: EntityManager,
+  ) {
     try {
       if (items.length === 0) return;
 
       const cases = items.map((_, i) => `WHEN :id${i} THEN CAST(:quantity${i} AS int)`).join(" ");
       const parameters = Object.fromEntries(
-        items.flatMap((item, i) => [[`id${i}`, item.id], [`quantity${i}`, item.quantity]])
+        items.flatMap((item, i) => [
+          [`id${i}`, item.id],
+          [`quantity${i}`, item.quantity],
+        ]),
       );
 
       return await this.repoFor(txManager)
         .createQueryBuilder()
         .update(OutletMenuItem)
         .set({ availableUnit: () => `available_unit - (CASE id ${cases} END)` })
-        .where("id IN (:...ids)", { ids: items.map(item => item.id) })
+        .where("id IN (:...ids)", { ids: items.map((item) => item.id) })
         .setParameters(parameters)
         .execute();
     } catch (error) {
       throw new HttpError(
-        `Failed to decrease available units for outlet menu item ids ${items.map(item => item.id).join(", ")}` , 
-        StatusCodes.EXPECTATION_FAILED, error as Error
+        `Failed to decrease available units for outlet menu item ids ${items.map((item) => item.id).join(", ")}`,
+        StatusCodes.EXPECTATION_FAILED,
+        error as Error,
       );
     }
   }

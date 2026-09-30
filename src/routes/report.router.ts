@@ -2,9 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware.js";
 import { StatusCodes } from "http-status-codes";
 import { validateSchema } from "../middlewares/validate.middleware.js";
-import {
-  topItemsByOutletQuerySchema
-} from "../schemas/report.schema.js";
+import { topItemsByOutletQuerySchema } from "../schemas/report.schema.js";
 import { ReportService } from "../service/report.service.js";
 
 export const reportRouter = Router();
@@ -15,7 +13,7 @@ reportRouter.get(
   asyncHandler(async (_req: Request, res: Response) => {
     const data = await reportService.revenueByOutlet();
     res.status(StatusCodes.OK).json(data);
-  })
+  }),
 );
 
 reportRouter.get(
@@ -25,5 +23,5 @@ reportRouter.get(
     const { outletId } = req.query;
     const data = await reportService.topItemsByOutlet(Number(outletId));
     res.status(StatusCodes.OK).json(data);
-  })
+  }),
 );

@@ -13,15 +13,15 @@ outletRouter.get(
   asyncHandler(async (_req: Request, res: Response) => {
     const outlets = await outletService.getAllOutlets();
     res.status(StatusCodes.OK).json(outlets);
-  })
+  }),
 );
 
 outletRouter.post(
-  "/create", 
+  "/create",
   validateSchema({ body: createOutletSchema }),
   asyncHandler(async (req: Request, res: Response) => {
     const { body } = req;
     const data = await outletService.createOutlet(body);
     res.status(StatusCodes.CREATED).json(data);
-  })
+  }),
 );

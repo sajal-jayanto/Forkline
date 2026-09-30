@@ -1,4 +1,4 @@
-import { Router , type Request, type Response } from "express";
+import { Router, type Request, type Response } from "express";
 import { validateSchema } from "../middlewares/validate.middleware.js";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware.js";
 import { StatusCodes } from "http-status-codes";
@@ -15,5 +15,5 @@ sealRouter.post(
     const { body } = req;
     const data = await saleService.createNewSale(body);
     res.status(StatusCodes.CREATED).json(data);
-  })
-)
+  }),
+);

@@ -6,12 +6,6 @@ export const createOutletSchema = z.object({
     .trim()
     .min(1, { error: "Outlet name cannot be empty." })
     .max(255, { error: "Outlet name must be at most 255 characters." }),
-  description: z
-    .string()
-    .trim()
-    .optional(),
-  location: z
-    .string()
-    .trim()
-    .optional(),
+  description: z.string().trim().optional(),
+  location: z.string().trim().optional(),
 });

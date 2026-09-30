@@ -4,10 +4,10 @@ export class HealthService {
   async checkHealth() {
     const isDbConnected = await this.checkDatabase();
     return {
-      status: isDbConnected ? 'healthy' : 'unhealthy',
+      status: isDbConnected ? "healthy" : "unhealthy",
       timestamp: new Date().toISOString(),
       checks: {
-        database: isDbConnected ? 'up' : 'down',
+        database: isDbConnected ? "up" : "down",
       },
     };
   }

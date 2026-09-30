@@ -25,47 +25,52 @@ export class SealService {
   private saleItemRepository = new SaleItemRepository();
 
   async createNewSale(payload: CreateNewSaleDto) {
-    const { outletId , items } = payload;
-    
+    const { outletId, items } = payload;
+
     const quantities = new Map<number, number>();
     for (const item of items) {
       quantities.set(item.menuItemId, (quantities.get(item.menuItemId) ?? 0) + item.quantity);
     }
     const menuItems = [...quantities.keys()];
 
-    return getDataSource().transaction(async txManager => {
-      const outletMenuItems = await this.outletMenuItemRepository.searchManyForUpdate({
-        outletId,
-        menuItemIds: menuItems,
-      }, txManager);
-
-      const outletMenuItemMap = new Map<number, OutletMenuItem>(
-        outletMenuItems.map(item => [item.menuItemId, item])
+    return getDataSource().transaction(async (txManager) => {
+      const outletMenuItems = await this.outletMenuItemRepository.searchManyForUpdate(
+        {
+          outletId,
+          menuItemIds: menuItems,
+        },
+        txManager,
       );
 
-      const missing = menuItems.filter(id => !outletMenuItemMap.has(id));
+      const outletMenuItemMap = new Map<number, OutletMenuItem>(
+        outletMenuItems.map((item) => [item.menuItemId, item]),
+      );
+
+      const missing = menuItems.filter((id) => !outletMenuItemMap.has(id));
       if (missing.length > 0) {
         throw new HttpError(
           `Menu item(s) ${missing.join(", ")} not available in outlet ${outletId}`,
-          StatusCodes.NOT_FOUND
+          StatusCodes.NOT_FOUND,
         );
       }
 
-      const unavailable = menuItems.filter(id => {
+      const unavailable = menuItems.filter((id) => {
         const outletMenuItem = outletMenuItemMap.get(id)!;
         return !outletMenuItem.isAvailable || outletMenuItem.availableUnit < quantities.get(id)!;
       });
       if (unavailable.length > 0) {
         throw new HttpError(
           `Not enough quantity for menu item(s) ${unavailable.join(", ")} in outlet ${outletId}`,
-          StatusCodes.CONFLICT
+          StatusCodes.CONFLICT,
         );
       }
 
-      const saleItems: Omit<SaleItemDto, "saleId">[] = menuItems.map(menuItemId => {
+      const saleItems: Omit<SaleItemDto, "saleId">[] = menuItems.map((menuItemId) => {
         const outletMenuItem = outletMenuItemMap.get(menuItemId)!;
         const quantity = quantities.get(menuItemId)!;
-        const unitPriceCents = toCents(outletMenuItem.priceOverride ?? outletMenuItem.menuItem.masterPrice);
+        const unitPriceCents = toCents(
+          outletMenuItem.priceOverride ?? outletMenuItem.menuItem.masterPrice,
+        );
         return {
           outletMenuItemId: outletMenuItem.id,
           quantity,
@@ -76,7 +81,10 @@ export class SealService {
 
       const totalCents = saleItems.reduce((sum, item) => sum + toCents(item.subtotal), 0);
       const taxCents = 0;
-      const lastReceiptNumber = await this.saleRepository.getLastReceiptNumber({ outletId }, txManager);
+      const lastReceiptNumber = await this.saleRepository.getLastReceiptNumber(
+        { outletId },
+        txManager,
+      );
 
       const sale: SaleDto = {
         outletId,
@@ -87,13 +95,13 @@ export class SealService {
       const savedSale = await this.saleRepository.create(sale, txManager);
 
       const savedSaleItems = await this.saleItemRepository.createMany(
-        saleItems.map(item => ({ ...item, saleId: savedSale.id })),
-        txManager
+        saleItems.map((item) => ({ ...item, saleId: savedSale.id })),
+        txManager,
       );
 
       await this.outletMenuItemRepository.decreaseAvailableUnits(
-        saleItems.map(item => ({ id: item.outletMenuItemId, quantity: item.quantity })),
-        txManager
+        saleItems.map((item) => ({ id: item.outletMenuItemId, quantity: item.quantity })),
+        txManager,
       );
 
       return { ...savedSale, saleItems: savedSaleItems };

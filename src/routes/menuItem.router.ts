@@ -20,25 +20,25 @@ menuItemRouter.get(
     const query = req.query as GetMenuItemsQuery;
     const items = await menuItemService.getAllMenuItems(query);
     res.status(StatusCodes.OK).json(items);
-  })
+  }),
 );
 
 menuItemRouter.post(
-  "/create", 
+  "/create",
   validateSchema({ body: createMenuItemSchema }),
   asyncHandler(async (req: Request, res: Response) => {
     const { body } = req;
     const createdItem = await menuItemService.createMenuItem(body);
     res.status(StatusCodes.CREATED).json(createdItem);
-  })
+  }),
 );
 
 menuItemRouter.post(
- "/assign-outlet",
- validateSchema({ body : assignOutletSchema }),
- asyncHandler(async (req: Request, res: Response) => {
-   const { body } = req;
-   const data = await menuItemService.assignOutlet(body);
-   res.status(StatusCodes.OK).json(data);
- })
-)
+  "/assign-outlet",
+  validateSchema({ body: assignOutletSchema }),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { body } = req;
+    const data = await menuItemService.assignOutlet(body);
+    res.status(StatusCodes.OK).json(data);
+  }),
+);

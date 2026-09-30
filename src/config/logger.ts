@@ -14,7 +14,7 @@ const transportOption = {
 
 const logger = pino({
   level: isDevelopment ? "debug" : "info",
-  ...(isDevelopment && {transport: transportOption})
+  ...(isDevelopment && { transport: transportOption }),
 });
 
 export { logger };
