@@ -1,6 +1,5 @@
 import { runner } from "node-pg-migrate";
 import { env } from "../config/env.js";
-import { logger } from "../config/logger.js";
 
 const initMigrations = async (): Promise<void> => {
   await runner({
