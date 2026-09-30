@@ -10,9 +10,7 @@ const initMigrations = async (): Promise<void> => {
       user: env.db.user,
       password: env.db.password,
       database: env.db.name,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: env.db.ssl,
     },
     dir: "migrations",
     direction: "up",

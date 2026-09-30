@@ -9,5 +9,6 @@ export const env = {
     user: process.env.DB_USER ?? "postgres",
     password: process.env.DB_PASSWORD ?? "postgres",
     name: process.env.DB_NAME ?? "authentication",
+    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
   },
 };

@@ -25,6 +25,7 @@ const dataSource = addTransactionalDataSource(
     username: env.db.user,
     password: env.db.password,
     database: env.db.name,
+    ssl: env.db.ssl,
     synchronize: false,
     logging: ["development", "test"].includes(env.nodeEnv)
   }),
