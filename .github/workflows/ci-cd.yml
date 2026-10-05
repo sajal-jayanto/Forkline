@@ -113,7 +113,7 @@ jobs:
               --name forkline-api-server \
               --restart unless-stopped \
               -p 9000:9000 \
-              --env-file /home/${{ secrets.SSH_USER }}/forkline/.env \
+              --env-file /home/${{ secrets.SSH_USER }}/Forkline/.env \
               $REGISTRY/forkline:$TAG
 
             # Clean up old unused images to save disk space
