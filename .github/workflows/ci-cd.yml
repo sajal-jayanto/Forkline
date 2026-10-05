@@ -69,5 +69,49 @@ jobs:
         
       - name: Push to AWS ECR
         run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/forkline:${{ steps.set_tag.outputs.sha_tag }}
+
+      - name: Execute Remote SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          envs: AWS_REGION,AWS_ACCOUNT_ID,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,TAG
+          script: |
+            # Install AWS-CLI in the remote pc 
+            REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+            
+            AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            aws ecr get-login-password \
+              --region $AWS_REGION | \
+            docker login \
+              --username AWS \
+              --password-stdin $REGISTRY
+            
+            docker pull $REGISTRY/forkline:$TAG
+
         
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,7 +9,14 @@ RUN npm run build
 FROM node:22-alpine AS runtime
 WORKDIR /app
 
-ENV NODE_ENV=production
+ENV NODE_ENV=""
+ENV DB_HOST=""
+ENV DB_PORT=""
+ENV DB_USER=""
+ENV DB_PASSWORD=""
+ENV DB_NAME=""
+ENV DB_SSL=""
+
 COPY package*.json ./
 
 COPY --from=build /app/node_modules ./node_modules
