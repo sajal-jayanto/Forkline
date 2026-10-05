@@ -40,3 +40,26 @@ jobs:
 
       - name: Run tests
         run: npm test
+        
+  docker-build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker Image
+        run: |
+          docker build -t forkline:${{ steps.set_tag.outputs.sha_tag }} .
+          docker tag forkline:${{ steps.set_tag.outputs.sha_tag }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/forkline:${{ steps.set_tag.outputs.sha_tag }}
+        
+      - name: Push to AWS ECR
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/forkline:${{ steps.set_tag.outputs.sha_tag }}
+        
+        
